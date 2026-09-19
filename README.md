@@ -1,7 +1,7 @@
 # Timing Screw Development
 
 ---
-> ## Cad Systems use analytically defined element for solid features. ##
+> ## Cad Systems use analytically defined elements for solid features. ##
 > 
 > Once you grasp the "analytical" means a very small subset of possible surfaces, you understand why complex cutter shapes producing complex sufaces is outside of the "analytically" defined surface realm.
 > 
