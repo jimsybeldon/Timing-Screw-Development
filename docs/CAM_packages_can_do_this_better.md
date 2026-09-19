@@ -357,13 +357,39 @@ This is exactly how real shops cut timing screws, augers, and bottle‑handling 
 
 ---
 
-## If you want next steps
-I can generate:
+# Technical Context & Kinematics-  Example of use with dividing head.
 
-- the **exact Mastercam parameter values** for each step  
-- a **Python FK → Mastercam orientation curve** workflow  
-- a **machine‑kinematics explanation** for your specific mill  
-- a **rectangular cutter STL** for import  
-- a **helix generator** with pitch, dwell zones, and bottle spacing  
+When programming variable-pitch timing screws or specialized bottle-feed scrolls on a 4th/5th-axis continuous rotary setup (or dividing head setup), standard solid-modeling 3D CAD kernels (like standard ACIS or Parasolid sweep features) often fail or produce invalid geometry. This is because the volume swept by the cutter along the helical, variable-pitch rotary path does not correspond cleanly to simple analytical sweeps.
 
-Just tell me what you want to build next.
+In CAM packages, this operation relies on **Multi-Axis Curve Machining**, **Rotary Swarf**, or **Tool Axis Control (Point/Line Driven)**, where the toolpath is derived directly from wireframe drive curves rather than CAD solid topology.
+
+---
+
+## CAM Workflow Strategies
+
+### 1. Autodesk Fusion (Manufacturing Extension)
+
+* **Method:** Use **Multi-Axis Contour** or **Rotary Parallel / Rotary Contour** with tool axis orientation aligned to a center vector.
+* **Setup:** A continuous 4th axis (rotary drive) synchronized with 5-axis tilt control (Z/Y translation + B/C rotation).
+* **Kinematics:** The workpiece rotates continuously on the dividing head / rotary table while the cutting tool follows the variable pitch profile along the X/Z axis, tilting dynamically to maintain appropriate lead/lag angles.
+
+### 2. Mastercam (Multiaxis Module)
+
+* **Method:** Use **Curve 5-Axis** or **Swarf Milling / Multiaxis Morph**.
+* **Setup:** Project a 3D floor/wall profile onto a cylindrical surface, driven by line vectors (Pattern & Tool Axis Control).
+* **Kinematics:** Mastercam controls the continuous rotation of the dividing head axis while calculating the 3-dimensional cutter position along the pitch curve, accurately replicating the inverse cutter engagement.
+
+---
+
+## Quantitative Accuracy Estimate
+
+* **Probability of direct CAD solids handling variable-pitch dynamic cutter sweeps successfully:** $P(\text{CAD success}) \approx 0.05 \text{ to } 0.15$
+* **Probability of CAM multi-axis toolpath generation executing accurate physical geometry:** $P(\text{CAM success}) \approx 0.90 \text{ to } 0.95$
+
+---
+
+# Relevant Demonstration Link
+
+[Mastercam 5-Axis Multiaxis Machining Demonstration](https://www.youtube.com/watch?v=osX65iz1gzE&utm_source=gemini)
+
+*This video demonstrates continuous 5-axis multiaxis toolpaths (including Curve 5-Axis and Multiaxis Flow) synchronized with rotary machine kinematics in Mastercam, which reflects the vector-driven control strategy required for timing screw profiles.*

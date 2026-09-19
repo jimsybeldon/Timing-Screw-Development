@@ -56,6 +56,36 @@ CAM avoids making the complete result depend on one restrictive swept-solid feat
    - Confirm that the machine, holder, fixtures, and tool-axis limits are valid.
    - Post-process only after the simulation is acceptable.
 
+## CAM and simulation options
+
+For a variable-pitch timing screw or bottle-feed scroll on a continuous 4th- or 5th-axis rotary setup, the manufacturing operation is best expressed as multi-axis curve machining, rotary swarf, or tool-axis control driven by points, lines, or vectors. The workpiece can rotate continuously on a dividing head or rotary table while the cutter follows the variable-pitch profile and maintains the required lead, lag, tilt, and 90-degree rotation.
+
+The following tools are candidates for investigating the motion and material removal:
+
+- **OpenCAMLib (OCL)**: open-source cutter and toolpath computation that can be explored for custom cutter bodies, multi-axis motion, and swept-volume calculations.
+- **FreeCAD Path Workbench with OCL**: a public workflow for importing a cutter and drive curve, simulating tool motion, and inspecting or exporting the resulting material-removal envelope.
+- **CAMotics**: an accessible simulator for visualizing toolpaths and material removal; custom-cutter and multi-axis support should be verified for the required setup.
+- **PyCAM**: a simpler open-source option for basic toolpath and cutter-motion visualization, with more limited custom-tool support.
+- **Blender with a CNC or Boolean workflow**: useful for rigid-body cutter animation and swept-volume visualization, but not a substitute for machine-aware CAM verification.
+- **Commercial CAM and machine simulation**: Mastercam, Autodesk Fusion with the Manufacturing Extension, Siemens NX CAM, and comparable systems can provide curve-driven multi-axis toolpaths, tool-axis control, collision checking, and machine-kinematic simulation. Exact capabilities depend on the installed modules, postprocessor, and machine definition.
+
+### Candidate toolpath strategies
+
+- **Autodesk Fusion**: investigate Multi-Axis Contour or Rotary Parallel/Rotary Contour with center-vector tool-axis control, using continuous rotary motion and synchronized tilt where the machine supports it.
+- **Mastercam**: investigate Curve 5-Axis, Swarf, or Multiaxis Morph. Drive the toolpath from cylindrical or projected profile curves and use tool-axis control to coordinate the dividing-head rotation with the cutter position and orientation.
+
+These are starting points rather than validated recipes. Each candidate must be tested with the actual cutter geometry, helix segments, rotary-axis limits, holder and fixture clearances, postprocessor, and machine simulation. A successful visual simulation is not by itself proof that the machine can execute the motion safely.
+
+### Open-source and visualization path
+
+When commercial CAM is unavailable, an exploratory pipeline can use a rectangular cutter model, a helix or sampled drive curve, and a time-indexed rigid-body transform:
+
+```text
+T(t) = R(t) · P(t)
+```
+
+The cutter position `P(t)` follows the helix while `R(t)` applies the tool-axis orientation and independent rotation. OCL or a comparable simulation engine can then be evaluated for swept-volume and material-removal visualization. Blender, robotics simulators, and similar tools are useful for checking kinematics, but their results still need to be reconciled with a real CAM system and machine model before manufacturing.
+
 ## Repository contents
 
 ### CAD data
@@ -71,6 +101,7 @@ The three part files represent the practical segmented approach used after the s
 ### Documentation
 
 - [`docs/CAM_packages_can_do_this_better.md`](docs/CAM_packages_can_do_this_better.md): rationale for using CAM to handle arbitrary cutter geometry, tool-axis rotation, curve-driven motion, and swept-volume simulation.
+- [`docs/CAM_SImulators.md`](docs/CAM_SImulators.md): public CAM, open-source, and visualization options for simulating arbitrary cutter motion and swept-volume removal.
 - [`data_SW2026/README_road_map_Sw2026.md`](data_SW2026/README_road_map_Sw2026.md): SolidWorks 2026 modeling paths, solid-sweep constraints, and fallback methods.
 - [`docs/road_map_NX.md`](docs/road_map_NX.md): Siemens NX swept-volume and Boolean-subtract workflow, including optional table-driven motion.
 - [`docs/road_map_SolidEdge.md`](docs/road_map_SolidEdge.md): Solid Edge Solid Sweep Cutout workflow and its tool-body constraints.
